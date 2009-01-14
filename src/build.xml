@@ -725,6 +725,10 @@
         <build-panel name="InstallationTypePanel">
             <include name="com/izforge/izpack/panels/InstallationTypePanel.java"/>
         </build-panel>
+        <build-panel name="HTMLHelloPanel">
+            <include name="com/izforge/izpack/panels/HTMLHelloPanel.java"/>
+            <include name="com/izforge/izpack/panels/HTMLInfoPanel.java"/>
+        </build-panel>
     </target>
 
     <!--
@@ -1019,6 +1023,11 @@
 		-->
         <copy todir="${basedir}/bin/native/izpack"
               file="${basedir}/src/native/ShellLink/Release_Unicode/ShellLink.dll"
+              verbose="true"
+              overwrite="yes"
+              preservelastmodified="true"/>
+        <copy todir="${basedir}/bin/native/izpack"
+              file="${basedir}/src/native/ShellLink_x64/Release_Unicode/ShellLink_x64.dll"
               verbose="true"
               overwrite="yes"
               preservelastmodified="true"/>
