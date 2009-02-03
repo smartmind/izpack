@@ -1055,6 +1055,13 @@ public class CompilerConfig extends Thread
                 pack.addDependency(depName);
 
             }
+            
+            iter = el.getChildrenNamed("validator").iterator();
+            while (iter.hasNext()) {
+                XMLElement validator = iter.next();
+                pack.addValidator(requireContent(validator));
+            }
+            
             // We add the pack
             compiler.addPack(pack);
         }
@@ -2553,11 +2560,20 @@ public class CompilerConfig extends Thread
         // exit code 1 means: error
         int exitCode = 1;
         String home = ".";
+        
         // We get the IzPack home directory
-        String izHome = System.getProperty("IZPACK_HOME");
+        String izHome = System.getProperty("izpack.home");
         if (izHome != null)
         {
             home = izHome;
+        }
+        else
+        {
+            izHome = System.getenv("IZPACK_HOME");
+            if (izHome != null)
+            {
+                home = izHome;
+            }
         }
 
         // We analyse the command line parameters
