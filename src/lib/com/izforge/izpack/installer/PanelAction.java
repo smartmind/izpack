@@ -10,11 +10,12 @@ package com.izforge.izpack.installer;
 import com.izforge.izpack.util.AbstractUIHandler;
 
 /*
- * IzPack - Copyright 2001-2008 Julien Ponge, All Rights Reserved.
+ * IzPack - Copyright 2001-2009 Julien Ponge, All Rights Reserved.
  * 
  * http://izpack.org/ http://izpack.codehaus.org/
  * 
  * Copyright 2008 Florian Bühlmann
+ * Copyright 2009 Dennis Reil
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -43,6 +44,11 @@ public interface PanelAction
      * attribute for the stage of the action
      */
     public static final String PANEL_ACTION_STAGE_TAG = "stage";
+    
+    /**
+     * tag-name for the configuration of an action. 
+     */
+    public static final String PANEL_ACTION_CONFIGURATION_TAG = "configuration";
 
     /**
      * pre panel activation stage
@@ -64,4 +70,12 @@ public interface PanelAction
      * During an automated installation the handler is null on each action because we have no GUI to handle.
      */
     public void executeAction(final AutomatedInstallData adata, AbstractUIHandler handler);
+       
+    
+    /**
+     * Initializes the PanelAction with the given configuration.
+     * @param configuration an PanelActionConfiguration containing the configuration of the action or
+     *                      null if no configuration was found.
+     */
+    public void initialize(PanelActionConfiguration configuration);
 }

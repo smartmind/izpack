@@ -135,7 +135,7 @@ public class InstallerFrame extends JFrame {
      * Registered GUICreationListener.
      */
     protected ArrayList<GUIListener> guiListener;
-
+       
     /**
      * Heading major text.
      */
@@ -211,13 +211,13 @@ public class InstallerFrame extends JFrame {
         // Builds the GUI
         loadIcons();
         loadCustomIcons();
-        loadPanels();
+        loadPanels();               
         buildGUI();
 
         // We show the frame
         showFrame();
         switchPanel(0);
-    }
+    }   
 
     public Debugger getDebugger() {
         return this.debugger;
@@ -270,8 +270,8 @@ public class InstallerFrame extends JFrame {
             {
                 for (int actionIndex = 0; actionIndex < preConstgructionActions.size(); actionIndex++)
                 {
-                    PanelAction action = PanelActionFactory
-                            .createPanelAction(preConstgructionActions.get(actionIndex));
+                    PanelAction action = PanelActionFactory.createPanelAction(preConstgructionActions.get(actionIndex));
+                    action.initialize(p.getPanelActionConfiguration(preConstgructionActions.get(actionIndex)));
                     action.executeAction(AutomatedInstallData.getInstance(), null);
                 }
             }
@@ -289,8 +289,10 @@ public class InstallerFrame extends JFrame {
             {
                 for (int actionIndex = 0; actionIndex < preActivateActions.size(); actionIndex++)
                 {
-                    panel.addPreActivationAction(PanelActionFactory
-                            .createPanelAction(preActivateActions.get(actionIndex)));
+                    String panelActionClass = preActivateActions.get(actionIndex);
+                    PanelAction action = PanelActionFactory.createPanelAction(panelActionClass);
+                    action.initialize(p.getPanelActionConfiguration(panelActionClass));
+                    panel.addPreActivationAction(action);
                 }
             }
             List<String> preValidateActions = p.getPreValidationActions();
@@ -298,8 +300,10 @@ public class InstallerFrame extends JFrame {
             {
                 for (int actionIndex = 0; actionIndex < preValidateActions.size(); actionIndex++)
                 {
-                    panel.addPreValidationAction(PanelActionFactory
-                            .createPanelAction(preValidateActions.get(actionIndex)));
+                    String panelActionClass = preValidateActions.get(actionIndex);
+                    PanelAction action = PanelActionFactory.createPanelAction(panelActionClass);
+                    action.initialize(p.getPanelActionConfiguration(panelActionClass));
+                    panel.addPreValidationAction(action);
                 }
             }
             List<String> postValidateActions = p.getPostValidationActions();
@@ -307,8 +311,10 @@ public class InstallerFrame extends JFrame {
             {
                 for (int actionIndex = 0; actionIndex < postValidateActions.size(); actionIndex++)
                 {
-                    panel.addPostValidationAction(PanelActionFactory
-                            .createPanelAction(postValidateActions.get(actionIndex)));
+                    String panelActionClass = postValidateActions.get(actionIndex);
+                    PanelAction action = PanelActionFactory.createPanelAction(panelActionClass);
+                    action.initialize(p.getPanelActionConfiguration(panelActionClass));
+                    panel.addPostValidationAction(action);
                 }
             }
 

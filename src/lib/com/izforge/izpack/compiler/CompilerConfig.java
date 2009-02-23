@@ -37,6 +37,7 @@ import com.izforge.izpack.event.CompilerListener;
 import com.izforge.izpack.installer.DataValidator;
 import com.izforge.izpack.installer.InstallerRequirement;
 import com.izforge.izpack.installer.PanelAction;
+import com.izforge.izpack.installer.PanelActionConfiguration;
 import com.izforge.izpack.installer.PanelAction.ActionStage;
 import com.izforge.izpack.panels.HelpWindow;
 import com.izforge.izpack.rules.Condition;
@@ -652,7 +653,8 @@ public class CompilerConfig extends Thread {
             String excludeGroup = el.getAttribute("excludeGroup");
             boolean uninstall = "yes".equalsIgnoreCase(el.getAttribute("uninstall", "yes"));
             String parent = el.getAttribute("parent");
-
+            boolean hidden = "true".equalsIgnoreCase(el.getAttribute("hidden","false"));
+            
             String conditionid = el.getAttribute("condition");
 
             if (required && excludeGroup != null)
@@ -666,6 +668,7 @@ public class CompilerConfig extends Thread {
             pack.setOsConstraints(OsConstraint.getOsList(el)); // TODO:
             pack.setParent(parent);
             pack.setCondition(conditionid);
+            pack.setHidden(hidden);
 
             // unverified
             // if the pack belongs to an excludeGroup it's not preselected by default
@@ -3181,13 +3184,23 @@ public class CompilerConfig extends Thread {
                     .getChildrenNamed(PanelAction.PANEL_ACTION_TAG);
             if (actionList != null)
             {
-                for (int actionIndex = 0; actionIndex < actionList.size(); actionIndex++)
-                {
-                  IXMLElement action = actionList.get(actionIndex);
+                for (IXMLElement action : actionList){
                     String stage = action.getAttribute(PanelAction.PANEL_ACTION_STAGE_TAG);
-                    String actionName = action
-                            .getAttribute(PanelAction.PANEL_ACTION_CLASSNAME_TAG);
-
+                    String actionName = action.getAttribute(PanelAction.PANEL_ACTION_CLASSNAME_TAG);
+                    if (actionName != null){
+                        Vector<IXMLElement> params = action.getChildrenNamed("param");
+                        PanelActionConfiguration config = new PanelActionConfiguration();
+                        
+                        for(IXMLElement param : params){                            
+                            IXMLElement keyElement = param.getFirstChildNamed("key");
+                            IXMLElement valueElement = param.getFirstChildNamed("value");
+                            if ((keyElement != null) && (valueElement != null)){
+                                Debug.trace("Adding configuration property " + keyElement.getContent() + " with value " + valueElement.getContent() + " for action " + actionName);
+                                config.addProperty(keyElement.getContent(),valueElement.getContent());
+                            }                            
+                        }                                                
+                        panel.putPanelActionConfiguration(actionName, config);
+                    }
                     try
                     {
                         ActionStage actionStage = ActionStage.valueOf(stage);
@@ -3212,7 +3225,7 @@ public class CompilerConfig extends Thread {
                         parseError(action, "Invalid value [" + stage + "] for attribute : "
                                 + PanelAction.PANEL_ACTION_STAGE_TAG);
                     }
-                }
+                }                   
             }
             else
             {

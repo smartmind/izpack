@@ -20,18 +20,27 @@
  */
 package com.izforge.izpack.panels;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 
 import com.izforge.izpack.gui.ButtonFactory;
 import com.izforge.izpack.installer.InstallData;
@@ -39,7 +48,7 @@ import com.izforge.izpack.installer.InstallerFrame;
 import com.izforge.izpack.util.Debug;
 
 
-public class FileInputField extends JPanel implements ActionListener, FocusListener
+public class MultipleFileInputField extends JPanel implements ActionListener, FocusListener
 {
     private static final long serialVersionUID = 4673684743657328492L;
     
@@ -47,8 +56,11 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
     InstallerFrame parentFrame;
     List<ValidatorContainer> validators;
     
-    JTextField filetxt;
+
+    DefaultListModel model;
+    JList fileList;
     JButton browseBtn;
+    JButton deleteBtn;
     
     String set;
     int size;
@@ -57,12 +69,15 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
     String fileExtensionDescription;
     
     boolean allowEmpty;        
+    boolean createMultipleVariables;
     
-    public FileInputField(InstallerFrame parent, InstallData data, boolean directory, String set, int size,List<ValidatorContainer> validatorConfig){
-        this(parent,data,directory,set,size,validatorConfig,null,null);
-    }
+    int visibleRows = 10;
+    int preferredX = 200;
+    int preferredY = 200;
     
-    public FileInputField(InstallerFrame parent, InstallData data, boolean directory, String set, int size,List<ValidatorContainer> validatorConfig,String fileExt, String fileExtDesc){
+    String labeltext;
+        
+    public MultipleFileInputField(InstallerFrame parent, InstallData data, boolean directory, String set, int size,List<ValidatorContainer> validatorConfig,String fileExt, String fileExtDesc,boolean createMultipleVariables,int visibleRows, int preferredXSize, int preferredYSize, String labelText){
         this.parentFrame = parent;
         this.data = data;
         this.validators = validatorConfig;
@@ -71,23 +86,63 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
         this.fileExtension = fileExt;
         this.fileExtensionDescription = fileExtDesc;
         this.isDirectory = directory;
+        this.createMultipleVariables = createMultipleVariables;
+        this.visibleRows = visibleRows;
+        this.preferredX = preferredXSize;
+        this.preferredY = preferredYSize;
+        this.labeltext = labelText;
         this.initialize();
     }
     
-    public void initialize(){
-        filetxt = new JTextField(set, size);
-        filetxt.setCaretPosition(0);        
-        filetxt.addFocusListener(this);
-        
-        // TODO: use separate key for button text
-        browseBtn = ButtonFactory.createButton(data.langpack.getString("UserInputPanel.search.browse"), data.buttonsHColor);
-        browseBtn.addActionListener(this);        
-        this.add(filetxt);
-        this.add(browseBtn);           
+    public void clearFiles(){
+        this.model.clear();
     }
     
-    public void setFile(String filename){
-        filetxt.setText(filename);
+    public void addFile(String file){
+        this.model.addElement(file);
+    }
+    
+    public void initialize(){
+        JPanel main = new JPanel();
+        
+        
+        main.setLayout(new BoxLayout(main,BoxLayout.Y_AXIS));        
+        
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel,BoxLayout.X_AXIS));
+        JLabel label = new JLabel(this.labeltext);
+        labelPanel.add(label);
+        labelPanel.add(Box.createHorizontalGlue());
+        main.add(labelPanel);
+        
+        model = new DefaultListModel();
+        fileList = new JList(model);
+        fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        fileList.setVisibleRowCount(visibleRows);          
+        
+        JPanel panel = new JPanel();       
+        panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel,BoxLayout.Y_AXIS));        
+        
+        browseBtn = ButtonFactory.createButton(data.langpack.getString("UserInputPanel.button.browse"), data.buttonsHColor);
+        browseBtn.addActionListener(this);   
+        
+        deleteBtn = ButtonFactory.createButton(data.langpack.getString("UserInputPanel.button.delete"), data.buttonsHColor);
+        deleteBtn.addActionListener(this);
+        
+        JScrollPane scroller = new JScrollPane(fileList);
+        scroller.setPreferredSize(new Dimension(preferredX,preferredY));
+        panel.add(scroller);
+        
+        buttonPanel.add(browseBtn);
+        buttonPanel.add(deleteBtn);
+        buttonPanel.add(Box.createVerticalGlue());
+        panel.add(buttonPanel);
+        main.add(panel);
+        main.add(Box.createVerticalGlue());
+        add(main);
     }
 
     public void actionPerformed(ActionEvent arg0)
@@ -95,8 +150,8 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
         if (arg0.getSource() == browseBtn){
             Debug.trace("Show dirchooser");
             String initialPath = ".";
-            if (filetxt.getText() != null){
-                initialPath = filetxt.getText();
+            if (fileList.getSelectedValue() != null){
+                initialPath = (String) fileList.getSelectedValue();
             }
             JFileChooser filechooser = new JFileChooser(initialPath);
             if (isDirectory){
@@ -114,16 +169,29 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
 
             if (filechooser.showOpenDialog(parentFrame) == JFileChooser.APPROVE_OPTION) {
                 String selectedFile = filechooser.getSelectedFile().getAbsolutePath();
-                filetxt.setText(selectedFile);
+                model.addElement(selectedFile);
                 Debug.trace("Setting current file chooser directory to: " + selectedFile);
             }    
-        }                
+        }   
+        if (arg0.getSource() == deleteBtn){
+            Debug.trace("Delete selected file from list");
+            if (fileList.getSelectedValue() != null){
+                model.removeElement(fileList.getSelectedValue());
+            }
+        }
     }    
     
-    public File getSelectedFile(){
-        File result = null;
-        if (filetxt.getText() != null){
-            result = new File(filetxt.getText());
+    public List<String> getSelectedFiles(){
+        List<String> result = null;
+        if (model.size() > 0){
+            result = new ArrayList<String>();
+            
+            Enumeration<?> elements = model.elements();
+            for (;elements.hasMoreElements();)
+            {
+                String element = (String) elements.nextElement();
+                result.add(element);
+            }
         }
         return result;            
     }
@@ -134,9 +202,8 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
                 JOptionPane.WARNING_MESSAGE);
     }
     
-    public boolean validateField(){        
+    private boolean validateFile(String input){
         boolean result = false;
-        String input = filetxt.getText();
         if (allowEmpty && ((input == null) || (input.length() == 0))){
             result = true;
         }
@@ -171,6 +238,20 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
             }            
         }
         return result;
+    }
+    
+    public boolean validateField(){        
+        boolean result = false;
+        int fileCount = model.getSize();
+        
+        for (int i=0; i < fileCount; i++){
+            result = validateFile((String) model.getElementAt(i));
+            if (!result){
+                break;
+            }
+        }
+        
+        return result;
         
     }
 
@@ -194,8 +275,18 @@ public class FileInputField extends JPanel implements ActionListener, FocusListe
 
     public void focusLost(FocusEvent e)
     {
-        if (e.getSource() == this.filetxt){
-            
-        }        
+          
+    }
+
+    
+    public boolean isCreateMultipleVariables()
+    {
+        return createMultipleVariables;
+    }
+
+    
+    public void setCreateMultipleVariables(boolean createMultipleVariables)
+    {
+        this.createMultipleVariables = createMultipleVariables;
     }
 }
