@@ -81,8 +81,8 @@ import com.izforge.izpack.installer.DataValidator;
 import com.izforge.izpack.installer.IPSUnpacker;
 import com.izforge.izpack.installer.InstallerRequirement;
 import com.izforge.izpack.installer.PanelAction;
-import com.izforge.izpack.installer.PanelActionConfiguration;
 import com.izforge.izpack.installer.PanelAction.ActionStage;
+import com.izforge.izpack.installer.PanelActionConfiguration;
 import com.izforge.izpack.panels.HelpWindow;
 import com.izforge.izpack.rules.Condition;
 import com.izforge.izpack.rules.RulesEngine;
@@ -1346,7 +1346,7 @@ public class CompilerConfig extends Thread {
 
         IXMLParser refXMLParser = new XMLParser();
         // We get it
-        IXMLElement refXMLData = refXMLParser.parse(specin);
+        IXMLElement refXMLData = refXMLParser.parse(specin,refXMLFile.getAbsolutePath());
 
         // Now checked the loaded XML file for basic syntax
         // We check it
@@ -1776,8 +1776,6 @@ public class CompilerConfig extends Thread {
                     // this constructor will open the specified url (this is
                     // why the InputStream is not handled in a similar manner
                     // to the OutputStream)
-
-                    // IXMLReader reader = new StdXMLReader(null, originalUrl.toExternalForm());
 
                     IXMLElement xml = parser.parse(originalUrl);
                     IXMLWriter writer = new XMLWriter();
@@ -2318,7 +2316,7 @@ public class CompilerConfig extends Thread {
         {
             File file = new File(filename).getAbsoluteFile();
             assertIsNormalReadableFile(file, "Configuration file");
-            data = parser.parse(new FileInputStream(filename));
+            data = parser.parse(new FileInputStream(filename),file.getAbsolutePath());
             // add izpack built in property
             compiler.setProperty("izpack.file", file.toString());
         }
@@ -3296,7 +3294,7 @@ public class CompilerConfig extends Thread {
                     for (URL packslangURL : packsLangURLs)
                     {
                         // parsing xml
-                        IXMLElement xml = (IXMLElement) parser.parse(packslangURL.toExternalForm());
+                        IXMLElement xml = parser.parse(packslangURL);
                         if (mergedPacksLang == null)
                         {
                             // just keep the first file
