@@ -116,16 +116,21 @@ public class Unpacker extends UnpackerBase
 
                 // We get the internationalized name of the pack
                 final Pack pack = ((Pack) packs.get(i));
-                String stepname = pack.name;// the message to be passed to the
+                String stepname = pack.name;// the message to be passed to the                
+                
                 // installpanel
                 if (langpack != null && !(pack.id == null || "".equals(pack.id)))
                 {
-
                     final String name = langpack.getString(pack.id);
                     if (name != null && !"".equals(name))
                     {
                         stepname = name;
                     }
+                }
+                if (pack.isHidden()){
+                    // TODO: hide the pack completely
+                    // hide the pack name if pack is hidden
+                    stepname = "";                                           
                 }
                 handler.nextStep(stepname, i + 1, nfiles);
                 for (int j = 0; j < nfiles; j++)
@@ -486,13 +491,18 @@ public class Unpacker extends UnpackerBase
         {
             // TODO: finer grained error handling with useful error messages
             handler.stopAction();
-            if ("Installation cancelled".equals(err.getMessage()))
+            String message = err.getMessage();
+			if ("Installation cancelled".equals(message))
             {
                 handler.emitNotification("Installation cancelled");
             }
             else
             {
-                handler.emitError("An error occured", err.getMessage());
+            	if (message == null || "".equals(message))
+            	{
+            		message = "Internal error occured : " + err.toString();
+            	}
+                handler.emitError("An error occured", message);
                 err.printStackTrace();
             }
             this.result = false;

@@ -207,6 +207,11 @@ public class MultiVolumeUnpacker extends UnpackerBase
                         stepname = name;
                     }
                 }
+                if (pack.isHidden()){
+                    // TODO: hide the pack completely
+                    // hide the pack name if pack is hidden
+                    stepname = "";                                           
+                }
                 handler.nextStep(stepname, i + 1, nfiles);
                 for (int j = 0; j < nfiles; j++)
                 {
@@ -590,9 +595,20 @@ public class MultiVolumeUnpacker extends UnpackerBase
         {
             // TODO: finer grained error handling with useful error messages
             handler.stopAction();
-            handler.emitError("An error occured", err.toString());
-            err.printStackTrace();
-            Debug.trace("Error while installing: " + err.toString());
+            String message = err.getMessage();
+			if ("Installation cancelled".equals(message))
+            {
+                handler.emitNotification("Installation cancelled");
+            }
+            else
+            {
+            	if (message == null || "".equals(message))
+            	{
+            		message = "Internal error occured : " + err.toString();
+            	}
+                handler.emitError("An error occured", message);
+                err.printStackTrace();
+            }
             this.result = false;
         }
         finally
