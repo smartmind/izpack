@@ -23,6 +23,7 @@ import com.izforge.izpack.IPSPack;
 import com.izforge.izpack.Info;
 import com.izforge.izpack.LocaleDatabase;
 import com.izforge.izpack.Pack;
+import com.izforge.izpack.Panel;
 import com.izforge.izpack.rules.RulesEngine;
 import com.izforge.izpack.adaptator.IXMLElement;
 import com.izforge.izpack.adaptator.impl.XMLElementImpl;
@@ -161,7 +162,7 @@ public class AutomatedInstallData
     /**
      * The panels order.
      */
-    public List panelsOrder;
+    public List<Panel> panelsOrder;
 
     /**
      * The current panel.
@@ -226,14 +227,10 @@ public class AutomatedInstallData
      */
     protected AutomatedInstallData()
     {
-        if (self != null)
-        {
-            throw new RuntimeException("Panic!! second call of the InstallData Ctor!!");
-        }
         availablePacks = new ArrayList<Pack>();
-        selectedPacks = new ArrayList<Pack>();
+        selectedPacks = new ArrayList();
         panels = new ArrayList<IzPanel>();
-        panelsOrder = new ArrayList();
+        panelsOrder = new ArrayList<Panel>();
         xmlData = new XMLElementImpl("AutomatedInstallation");
         variables = new Properties();
         attributes = new HashMap<String, Object>();
