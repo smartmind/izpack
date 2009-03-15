@@ -460,7 +460,9 @@
             	<include name="com/izforge/izpack/adaptator/styleSheet.xsl"/>
             </fileset>
             <fileset dir="${img.dir}/installer"/>
-            <zipfileset src="${izevent.jar}"/>
+            <zipfileset src="${izevent.jar}">
+                <include name="com/izforge/izpack/event/*InstallerListener.class"/>
+            </zipfileset>
         </jar>
     </target>
 
@@ -524,6 +526,9 @@
             <fileset dir="${img.dir}/uninstaller">
                 <include name="**/*"/>
             </fileset>
+            <zipfileset src="${izevent.jar}">
+                <include name="com/izforge/izpack/event/*UninstallerListener.class"/>
+            </zipfileset>
         </jar>
     </target>
 
