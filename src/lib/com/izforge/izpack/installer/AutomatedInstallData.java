@@ -30,9 +30,8 @@ import com.izforge.izpack.adaptator.impl.XMLElementImpl;
 import com.sun.pkg.client.Fmri;
 import com.sun.pkg.client.Image.FmriState;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Proxy;
+
+import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.zip.ZipOutputStream;
@@ -43,7 +42,7 @@ import java.util.zip.ZipOutputStream;
  * @author Julien Ponge <julien@izforge.com>
  * @author Johannes Lehtinen <johannes.lehtinen@iki.fi>
  */
-public class AutomatedInstallData
+public class AutomatedInstallData implements Serializable
 {
 
 	// --- Static members -------------------------------------------------
