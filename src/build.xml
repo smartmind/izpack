@@ -609,9 +609,11 @@
 
         <build-panel name="FinishPanel">
             <include name="com/izforge/izpack/panels/FinishPanel.java"/>
+        	<include name="com/izforge/izpack/panels/FinishPanelConsoleHelper.java" />
         </build-panel>
         <build-panel name="HelloPanel">
             <include name="com/izforge/izpack/panels/HelloPanel.java"/>
+        	<include name="com/izforge/izpack/panels/HelloPanelConsoleHelper.java" />
         </build-panel>
         <build-panel name="SelectPrinterPanel">
             <include name="com/izforge/izpack/panels/SelectPrinterPanel.java"/>
@@ -636,6 +638,7 @@
         <build-panel name="InstallPanel">
             <include name="com/izforge/izpack/panels/InstallPanel.java"/>
             <include name="com/izforge/izpack/panels/InstallPanelAutomationHelper.java"/>
+        	<include name="com/izforge/izpack/panels/InstallPanelConsoleHelper.java" />
         </build-panel>
         <build-panel name="ExtendedInstallPanel">
             <include name="com/izforge/izpack/panels/ExtendedInstallPanel.java"/>
@@ -673,6 +676,7 @@
             <include name="com/izforge/izpack/panels/PathSelectionPanel.java"/>
             <include name="com/izforge/izpack/panels/TargetPanel.java"/>
             <include name="com/izforge/izpack/panels/TargetPanelAutomationHelper.java"/>
+        	<include name="com/izforge/izpack/panels/TargetPanelConsoleHelper.java" />
         </build-panel>
         <build-panel name="DefaultTargetPanel">
             <include name="com/izforge/izpack/panels/PathInputPanel.java"/>
@@ -714,6 +718,7 @@
             <include name="com/izforge/izpack/panels/UserInputPanelAutomationHelper.java"/>
             <include name="com/izforge/izpack/panels/Validator.java"/>
             <include name="com/izforge/izpack/panels/ValidatorContainer.java"/>
+        	<include name="com/izforge/izpack/panels/UserInputPanelConsoleHelper.java" />
         </build-panel>
         <build-panel name="UserPathPanel">
             <include name="com/izforge/izpack/panels/UserPathInputPanel.java"/>
