@@ -85,7 +85,30 @@ public class GUIInstaller extends InstallerBase
      */
     public GUIInstaller() throws Exception
     {
-        this.installdata = InstallData.getInstance();                
+        try {
+            init();
+        } catch (Exception e) { 
+            showFatalError(e);
+            throw e;
+        } catch (Error e) { 
+            showFatalError(e);
+            throw e;
+        }
+    }
+    
+    private void showFatalError(Throwable e)
+    {
+        try {
+            JOptionPane.showMessageDialog (null, "Error: "+e.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e2) {
+            e2.printStackTrace();
+        }
+    }
+    
+    private void init() throws Exception
+    {
+    
+        this.installdata = new InstallData();                
         
         // Loads the installation data
         loadInstallData(installdata);

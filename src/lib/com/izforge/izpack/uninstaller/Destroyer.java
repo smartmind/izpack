@@ -158,22 +158,15 @@ public class Destroyer extends Thread
 				handler.emitWarning("Error", e.getMessage());
 			}
         }
-        catch (Exception err)
+        catch (Throwable err)
         {
             handler.stopAction();
             err.printStackTrace();
 
-            StackTraceElement str[] = err.getStackTrace();
-            for (StackTraceElement aStr : str)
-            {
-            	// TODO Write something in there.
-            }
-
             StringWriter trace = new StringWriter();
-            // err.printStackTrace(new PrintStream);
             err.printStackTrace(new PrintWriter(trace));
 
-            handler.emitError("exception caught", err.toString() + "\n" + trace.toString());
+            handler.emitError("exception caught", trace.toString());
         }
     }
 
