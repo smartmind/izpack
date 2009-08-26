@@ -1,17 +1,17 @@
 /*
  * IzPack - Copyright 2001-2008 Julien Ponge, All Rights Reserved.
- * 
+ *
  * http://izpack.org/
  * http://izpack.codehaus.org/
- * 
+ *
  * Copyright 2003 Jonathan Halliday
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,11 +54,11 @@ public class InstallerBase
      * Resource name of the conditions specification
      */
     private static final String CONDITIONS_SPECRESOURCENAME = "conditions.xml";
-    
-    private RulesEngine rules; 
+
+    private RulesEngine rules;
     private List<InstallerRequirement> installerrequirements;
     private Map<String, List<DynamicVariable>> dynamicvariables;
-    
+
     /**
      * The base name of the XML file that specifies the custom langpack. Searched is for the file
      * with the name expanded by _ISO3.
@@ -85,7 +85,7 @@ public class InstallerBase
     public RulesEngine getRules(){
         return this.rules;
     }
-    
+
     /**
      * Loads the installation data. Also sets environment variables to <code>installdata</code>.
      * All system properties are available as $SYSTEM_<variable> where <variable> is the actual
@@ -120,6 +120,8 @@ public class InstallerBase
         objIn.close();
 
         checkForPrivilegedExecution(inf);
+
+        checkForRebootAction(inf);
 
         // We put the Info data as variables
         installdata.setVariable(ScriptParser.APP_NAME, inf.getAppName());
@@ -315,6 +317,16 @@ public class InstallerBase
 
     }
 
+    private void checkForRebootAction(Info info)
+    {
+        final String conditionId = info.getRebootActionConditionID();
+        if (conditionId != null)
+        {
+            if (!RulesEngine.getCondition(conditionId).isTrue())
+                info.setRebootAction(Info.REBOOT_ACTION_IGNORE);
+        }
+    }
+
     /**
      * Add the contents of a custom langpack (if exist) to the previos loaded comman langpack. If
      * not exist, trace an info and do nothing more.
@@ -492,7 +504,7 @@ public class InstallerBase
         // uninstallerLib list if exist
 
     }
-    
+
     /**
      * Reads the conditions specification file and initializes the rules engine.
      */
@@ -533,7 +545,7 @@ public class InstallerBase
 
             // get the data
             IXMLElement conditionsxml = xmlParser.parse(input);
-            this.rules = new RulesEngine(conditionsxml, installdata);         
+            this.rules = new RulesEngine(conditionsxml, installdata);
         }
         catch (Exception e)
         {
@@ -543,7 +555,7 @@ public class InstallerBase
         }
         installdata.setRules(rules);
     }
-    
+
     /**
      * Loads Dynamic Variables.
      */
@@ -562,7 +574,7 @@ public class InstallerBase
             System.out.println(e);
         }
     }
-    
+
     /**
      * Load installer conditions
      *
@@ -575,7 +587,7 @@ public class InstallerBase
         this.installerrequirements = (List<InstallerRequirement>) objIn.readObject();
         objIn.close();
     }
-    
+
     public boolean checkInstallerRequirements(AutomatedInstallData installdata) throws Exception
     {
         boolean result = true;
@@ -603,11 +615,11 @@ public class InstallerBase
         }
         return result;
     }
-    
+
     protected void showMissingRequirementMessage(String message){
         Debug.log(message);
     }
-    
+
     /**
      * Gets the stream to a resource.
      *
@@ -640,7 +652,7 @@ public class InstallerBase
         }
         return result;
     }
-    
+
     /**
      * Refreshes Dynamic Variables.
      */
